@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.lfpath.controller.admin.majordirectory;
 
+import io.swagger.v3.oas.annotations.Parameters;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -28,6 +29,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.lfpath.controller.admin.majordirectory.vo.*;
 import cn.iocoder.yudao.module.lfpath.dal.dataobject.majordirectory.MajorDirectoryDO;
 import cn.iocoder.yudao.module.lfpath.service.majordirectory.MajorDirectoryService;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "管理后台 - 高校专业目录")
 @RestController
@@ -91,4 +93,25 @@ public class MajorDirectoryController {
                         BeanUtils.toBean(list, MajorDirectoryRespVO.class));
     }
 
+    @GetMapping("/get-import-template")
+    @Operation(summary = "获得导入高校专业目录模板")
+    public void importTemplate(HttpServletResponse response) throws IOException {
+
+    }
+
+    // 新增导入接口
+    @PostMapping("/import")
+    @Operation(summary = "导入高校专业目录 Excel")
+    @Parameters({
+        @Parameter(name = "file", description = "Excel 文件", required = true),
+        @Parameter(name = "updateSupport", description = "是否支持更新，默认为 false", example = "true")
+    })
+    @PreAuthorize("@ss.hasPermission('lfpath:majordirectory:import')")
+    @ApiAccessLog(operateType = IMPORT)
+    public CommonResult<MajorDirectoryImportRespVO> importMajorDirectoryExcel(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "updateSupport", required = false, defaultValue = "false") Boolean updateSupport) throws IOException {
+        List<MajorDirectoryImportExcelVO> list = ExcelUtils.read(file, MajorDirectoryImportExcelVO.class);
+        return success(majorDirectoryService.importMajorDirectoryList(list, updateSupport));
+    }
 }

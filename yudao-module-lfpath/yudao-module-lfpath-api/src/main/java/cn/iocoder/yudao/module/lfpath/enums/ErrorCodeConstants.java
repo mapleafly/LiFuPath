@@ -25,5 +25,6 @@ public interface ErrorCodeConstants {
     ErrorCode MAJOR_DIRECTORY_PARENT_ERROR = new ErrorCode(1-111-003-004, "不能设置自己为父高校专业目录");
     ErrorCode MAJOR_DIRECTORY_MAJOR_NAME_DUPLICATE = new ErrorCode(1-111-003-005, "已经存在该专业名称的高校专业目录");
     ErrorCode MAJOR_DIRECTORY_PARENT_IS_CHILD = new ErrorCode(1-111-003-006, "不能设置自己的子MajorDirectory为父MajorDirectory");
+    ErrorCode MAJOR_IMPORT_LIST_IS_EMPTY = new ErrorCode(1-111-003-007, "导入高校专业目录数据不能为空！");
 
 }

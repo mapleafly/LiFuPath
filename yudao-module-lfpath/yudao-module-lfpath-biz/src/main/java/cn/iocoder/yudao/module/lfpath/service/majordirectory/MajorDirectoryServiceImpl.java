@@ -1,11 +1,15 @@
 package cn.iocoder.yudao.module.lfpath.service.majordirectory;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
 import cn.iocoder.yudao.module.lfpath.controller.admin.majordirectory.vo.*;
 import cn.iocoder.yudao.module.lfpath.dal.dataobject.majordirectory.MajorDirectoryDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -131,6 +135,45 @@ public class MajorDirectoryServiceImpl implements MajorDirectoryService {
     @Override
     public List<MajorDirectoryDO> getMajorDirectoryList(MajorDirectoryListReqVO listReqVO) {
         return majorDirectoryMapper.selectList(listReqVO);
+    }
+
+    @Override
+    public MajorDirectoryImportRespVO importMajorDirectoryList(List<MajorDirectoryImportExcelVO> importMajorList, boolean isUpdateSupport) {
+
+        // 1.1 参数校验
+        if (CollUtil.isEmpty(importMajorList)) {
+            throw exception(MAJOR_IMPORT_LIST_IS_EMPTY);
+        }
+
+        //把门类插入到lfpath_major_directory表中
+
+        // 1. 遍历importMajorList，按照category去重，获取去重后的category组。
+        List<String> categoryList = importMajorList.stream().map(MajorDirectoryImportExcelVO::getCategory).distinct().collect(Collectors.toList());
+        // 2. 再查询数据库表lfpath_major_directory，查找出level字段值为1的记录。
+        List<MajorDirectoryDO> majorDirectoryList = majorDirectoryMapper.selectList(new LambdaQueryWrapperX<MajorDirectoryDO>()
+                .eq(MajorDirectoryDO::getLevel, 1));
+        // 3. 对比majorDirectoryList中major_name字段值和1中获得的categoryList数据，找出majorDirectoryLis中不存在的category值。
+        List<String> categoryList2 = majorDirectoryList.stream().map(MajorDirectoryDO::getMajorName).collect(Collectors.toList());
+        List<String> categoryList3 = categoryList.stream().filter(category -> !categoryList2.contains(category)).collect(Collectors.toList());
+        // 4. 将categoryList3中获得的数值，作为major_name字段，插入数据库表lfpath_major_directory中，每一条记录的level都是1，directoryType也是1，其他值为空。
+        for (String category : categoryList3) {
+            MajorDirectoryDO majorDirectoryDO = new MajorDirectoryDO();
+            majorDirectoryDO.setMajorName(category);
+            majorDirectoryDO.setLevel("1");
+            majorDirectoryDO.setDirectoryType("1");
+            majorDirectoryMapper.insert(majorDirectoryDO);
+        }
+
+        //把专业类插入到lfpath_major_directory表中
+        List<MajorDirectoryDO> majorDirectoryList2 = majorDirectoryMapper.selectList(new LambdaQueryWrapperX<MajorDirectoryDO>()
+                .eq(MajorDirectoryDO::getLevel, 2));
+        //从importMajorList中获取MajorDirectoryImportExcelVO，要求MajorDirectoryImportExcelVO中的MajorClass字段去重，
+        List<String> majorClassList = importMajorList.stream().map(MajorDirectoryImportExcelVO::getMajorClass).distinct().collect(Collectors.toList());
+        //去重后获取新的List<MajorDirectoryImportExcelVO>
+        List<MajorDirectoryImportExcelVO> majorClassList2 = importMajorList.stream().filter(majorClass -> !majorClassList.contains(majorClass.getMajorClass())).collect(Collectors.toList());
+        //todo
+
+        return null;
     }
 
 }

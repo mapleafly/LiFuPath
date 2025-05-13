@@ -52,4 +52,5 @@ public interface MajorDirectoryService {
      */
     List<MajorDirectoryDO> getMajorDirectoryList(MajorDirectoryListReqVO listReqVO);
 
+    MajorDirectoryImportRespVO importMajorDirectoryList(List<MajorDirectoryImportExcelVO> importMajorList, boolean isUpdateSupport);
 }
