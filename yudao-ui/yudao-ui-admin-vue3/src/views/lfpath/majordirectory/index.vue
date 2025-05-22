@@ -8,9 +8,9 @@
       :inline="true"
       label-width="68px"
     >
-      <el-form-item label="专业名称" prop="majorName">
+      <el-form-item label="专业名称" prop="name">
         <el-input
-          v-model="queryParams.majorName"
+          v-model="queryParams.name"
           placeholder="请输入专业名称"
           clearable
           @keyup.enter="handleQuery"
@@ -95,7 +95,7 @@
       v-if="refreshTable"
     >
 <!--      <el-table-column label="编号" align="center" prop="id" />-->
-      <el-table-column label="专业名称" align="center" prop="majorName" />
+      <el-table-column label="专业名称" align="center" prop="name" width="240px" />
 <!--      <el-table-column label="父级编号" align="center" prop="parentId" />-->
       <el-table-column label="专业代码" align="center" prop="majorCode" />
       <el-table-column label="专业层级" align="center" prop="level">
@@ -115,7 +115,7 @@
         label="创建时间"
         align="center"
         prop="createTime"
-        :formatter="dateFormatter"
+        :formatter="dateFormatter2"
         width="180px"
       />
       <el-table-column label="操作" align="center" min-width="120px">
@@ -154,7 +154,7 @@
 
 <script setup lang="ts">
 import { getStrDictOptions, DICT_TYPE } from '@/utils/dict'
-import { dateFormatter } from '@/utils/formatTime'
+import { dateFormatter2 } from '@/utils/formatTime'
 import { handleTree } from '@/utils/tree'
 import download from '@/utils/download'
 import { MajorDirectoryApi, MajorDirectoryVO } from '@/api/lfpath/majordirectory'
@@ -171,7 +171,7 @@ const list = ref<MajorDirectoryVO[]>([]) // 列表的数据
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 100,
-  majorName: undefined,
+  name: undefined,
   majorCode: undefined,
   level: undefined,
   directoryType: undefined,

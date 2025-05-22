@@ -24,7 +24,7 @@ public class MajorDirectoryImportExcelVO {
     @ExcelProperty("专业代码")
     private String majorCode;
     @ExcelProperty("专业名称")
-    private String majorName;
+    private String name;
     @ExcelProperty("学位授予门类")
     private String degreeType;
     @ExcelProperty("修业年限")

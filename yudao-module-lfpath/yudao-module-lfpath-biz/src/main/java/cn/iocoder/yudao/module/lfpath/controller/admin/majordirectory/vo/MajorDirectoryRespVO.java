@@ -20,7 +20,7 @@ public class MajorDirectoryRespVO {
 
     @Schema(description = "专业名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "赵六")
     @ExcelProperty("专业名称")
-    private String majorName;
+    private String name;
 
     @Schema(description = "父级编号", example = "15665")
     @ExcelProperty("父级编号")

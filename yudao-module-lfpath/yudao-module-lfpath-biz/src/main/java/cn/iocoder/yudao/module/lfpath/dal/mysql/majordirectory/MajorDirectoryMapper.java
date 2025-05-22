@@ -19,7 +19,7 @@ public interface MajorDirectoryMapper extends BaseMapperX<MajorDirectoryDO> {
 
     default List<MajorDirectoryDO> selectList(MajorDirectoryListReqVO reqVO) {
         return selectList(new LambdaQueryWrapperX<MajorDirectoryDO>()
-                .likeIfPresent(MajorDirectoryDO::getMajorName, reqVO.getMajorName())
+                .likeIfPresent(MajorDirectoryDO::getName, reqVO.getName())
                 .eqIfPresent(MajorDirectoryDO::getMajorCode, reqVO.getMajorCode())
                 .eqIfPresent(MajorDirectoryDO::getLevel, reqVO.getLevel())
                 .eqIfPresent(MajorDirectoryDO::getDirectoryType, reqVO.getDirectoryType())
@@ -27,7 +27,7 @@ public interface MajorDirectoryMapper extends BaseMapperX<MajorDirectoryDO> {
     }
 
 	default MajorDirectoryDO selectByParentIdAndMajorName(Long parentId, String majorName) {
-	    return selectOne(MajorDirectoryDO::getParentId, parentId, MajorDirectoryDO::getMajorName, majorName);
+	    return selectOne(MajorDirectoryDO::getParentId, parentId, MajorDirectoryDO::getName, majorName);
 	}
 
     default Long selectCountByParentId(Long parentId) {

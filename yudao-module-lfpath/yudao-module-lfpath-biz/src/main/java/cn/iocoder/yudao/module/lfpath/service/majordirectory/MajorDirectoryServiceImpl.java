@@ -38,7 +38,7 @@ public class MajorDirectoryServiceImpl implements MajorDirectoryService {
         // 校验父级编号的有效性
         validateParentMajorDirectory(null, createReqVO.getParentId());
         // 校验专业名称的唯一性
-        validateMajorDirectoryMajorNameUnique(null, createReqVO.getParentId(), createReqVO.getMajorName());
+        validateMajorDirectoryMajorNameUnique(null, createReqVO.getParentId(), createReqVO.getName());
 
         // 插入
         MajorDirectoryDO majorDirectory = BeanUtils.toBean(createReqVO, MajorDirectoryDO.class);
@@ -54,7 +54,7 @@ public class MajorDirectoryServiceImpl implements MajorDirectoryService {
         // 校验父级编号的有效性
         validateParentMajorDirectory(updateReqVO.getId(), updateReqVO.getParentId());
         // 校验专业名称的唯一性
-        validateMajorDirectoryMajorNameUnique(updateReqVO.getId(), updateReqVO.getParentId(), updateReqVO.getMajorName());
+        validateMajorDirectoryMajorNameUnique(updateReqVO.getId(), updateReqVO.getParentId(), updateReqVO.getName());
 
         // 更新
         MajorDirectoryDO updateObj = BeanUtils.toBean(updateReqVO, MajorDirectoryDO.class);
@@ -153,12 +153,12 @@ public class MajorDirectoryServiceImpl implements MajorDirectoryService {
         List<MajorDirectoryDO> majorDirectoryList = majorDirectoryMapper.selectList(new LambdaQueryWrapperX<MajorDirectoryDO>()
                 .eq(MajorDirectoryDO::getLevel, 1));
         // 3. 对比majorDirectoryList中major_name字段值和1中获得的categoryList数据，找出majorDirectoryLis中不存在的category值。
-        List<String> categoryList2 = majorDirectoryList.stream().map(MajorDirectoryDO::getMajorName).collect(Collectors.toList());
+        List<String> categoryList2 = majorDirectoryList.stream().map(MajorDirectoryDO::getName).collect(Collectors.toList());
         List<String> categoryList3 = categoryList.stream().filter(category -> !categoryList2.contains(category)).collect(Collectors.toList());
         // 4. 将categoryList3中获得的数值，作为major_name字段，插入数据库表lfpath_major_directory中，每一条记录的level都是1，directoryType也是1，其他值为空。
         for (String category : categoryList3) {
             MajorDirectoryDO majorDirectoryDO = new MajorDirectoryDO();
-            majorDirectoryDO.setMajorName(category);
+            majorDirectoryDO.setName(category);
             majorDirectoryDO.setLevel("1");
             majorDirectoryDO.setDirectoryType("1");
             majorDirectoryMapper.insert(majorDirectoryDO);

@@ -3,7 +3,7 @@ import request from '@/config/axios'
 // 高校专业目录 VO
 export interface MajorDirectoryVO {
   id: number // 编号
-  majorName: string // 专业名称
+  name: string // 专业名称
   parentId: number // 父级编号
   majorCode: string // 专业代码
   level: string // 专业层级
@@ -44,4 +44,4 @@ export const MajorDirectoryApi = {
   exportMajorDirectory: async (params) => {
     return await request.download({ url: `/lfpath/major-directory/export-excel`, params })
   },
-}
+}

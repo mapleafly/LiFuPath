@@ -10,7 +10,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 public class MajorDirectoryListReqVO {
 
     @Schema(description = "专业名称", example = "赵六")
-    private String majorName;
+    private String name;
 
     @Schema(description = "专业代码")
     private String majorCode;

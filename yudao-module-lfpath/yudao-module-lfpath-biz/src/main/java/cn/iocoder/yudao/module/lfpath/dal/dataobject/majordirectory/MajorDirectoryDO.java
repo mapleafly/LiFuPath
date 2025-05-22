@@ -32,7 +32,7 @@ public class MajorDirectoryDO extends BaseDO {
     /**
      * 专业名称
      */
-    private String majorName;
+    private String name;
     /**
      * 父级编号
      */
@@ -44,7 +44,7 @@ public class MajorDirectoryDO extends BaseDO {
     /**
      * 专业层级
      *
-     * 枚举 {@link TODO lfpath_major_level 对应的类}
+     *
      */
     private String level;
     /**
@@ -62,7 +62,7 @@ public class MajorDirectoryDO extends BaseDO {
     /**
      * 目录类型
      *
-     * 枚举 {@link TODO lfpath_major_directory_type 对应的类}
+     *
      */
     private String directoryType;
 

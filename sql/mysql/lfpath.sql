@@ -43,3 +43,14 @@ CREATE TABLE lfpath_candidate_score_distribution (
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     deleted BIT(1) NOT NULL DEFAULT b'0' COMMENT '是否删除'
 ) COMMENT='考生分数分布表';
+
+CREATE TABLE `lfpath_major_category` (
+    `id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '编号',
+    `major_code` VARCHAR(50) NOT NULL COMMENT '门类编码',
+    `major_name` VARCHAR(255) NOT NULL COMMENT '门类名称',
+    `creator` VARCHAR(64) COMMENT '创建者',
+    `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `updater` VARCHAR(64) COMMENT '更新者',
+    `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `deleted` BIT(1) NOT NULL DEFAULT b'0' COMMENT '是否删除'
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '学科门类信息表';
