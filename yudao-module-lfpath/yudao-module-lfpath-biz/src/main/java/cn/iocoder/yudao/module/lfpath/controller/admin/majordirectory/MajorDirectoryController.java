@@ -96,7 +96,11 @@ public class MajorDirectoryController {
     @GetMapping("/get-import-template")
     @Operation(summary = "获得导入高校专业目录模板")
     public void importTemplate(HttpServletResponse response) throws IOException {
-
+        List<MajorDirectoryImportExcelVO> list  = Arrays.asList(
+                MajorDirectoryImportExcelVO.builder().majorCode("01").name("哲学").degreeType("哲学").studyDuration("四年").establishmentYear("2023").build(),
+                MajorDirectoryImportExcelVO.builder().majorCode("02").name("经济学").degreeType("经济学").studyDuration("四年").establishmentYear("2024").build()
+          );
+        ExcelUtils.write(response, "高校专业目录导入模板.xls", "高校专业目录列表", MajorDirectoryImportExcelVO.class, list);
     }
 
     // 新增导入接口

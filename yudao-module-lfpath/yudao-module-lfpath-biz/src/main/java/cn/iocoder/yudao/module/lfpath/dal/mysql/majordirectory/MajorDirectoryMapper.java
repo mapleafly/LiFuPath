@@ -23,12 +23,16 @@ public interface MajorDirectoryMapper extends BaseMapperX<MajorDirectoryDO> {
                 .eqIfPresent(MajorDirectoryDO::getMajorCode, reqVO.getMajorCode())
                 .eqIfPresent(MajorDirectoryDO::getLevel, reqVO.getLevel())
                 .eqIfPresent(MajorDirectoryDO::getDirectoryType, reqVO.getDirectoryType())
-                .orderByDesc(MajorDirectoryDO::getId));
+                .orderByAsc(MajorDirectoryDO::getId));
     }
 
 	default MajorDirectoryDO selectByParentIdAndMajorName(Long parentId, String majorName) {
 	    return selectOne(MajorDirectoryDO::getParentId, parentId, MajorDirectoryDO::getName, majorName);
 	}
+
+    default MajorDirectoryDO selectByMajorCode(String majorCode) {
+        return selectOne(MajorDirectoryDO::getMajorCode, majorCode);
+    }
 
     default Long selectCountByParentId(Long parentId) {
         return selectCount(MajorDirectoryDO::getParentId, parentId);

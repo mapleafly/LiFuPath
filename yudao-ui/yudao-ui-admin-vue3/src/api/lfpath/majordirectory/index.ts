@@ -44,4 +44,14 @@ export const MajorDirectoryApi = {
   exportMajorDirectory: async (params) => {
     return await request.download({ url: `/lfpath/major-directory/export-excel`, params })
   },
+
+  // 导入高校专业目录 Excel
+  importMajorDirectory: async (formData: FormData) => {
+    return await request.post({ url: `/lfpath/major-directory/import`, data: formData })
+  },
+
+  // 下载高校信息导入模板
+  importMajorDirectoryTemplate: async () => {
+    return await request.download({ url: `/lfpath/major-directory/get-import-template` })
+  },
 }

@@ -68,6 +68,14 @@
           <Icon icon="ep:plus" class="mr-5px" /> 新增
         </el-button>
         <el-button
+          type="warning"
+          plain
+          @click="handleImport"
+          v-hasPermi="['lfpath:major-directory:import']"
+        >
+          <Icon icon="ep:upload"  class="mr-5px" /> 导入
+        </el-button>
+        <el-button
           type="success"
           plain
           @click="handleExport"
@@ -150,6 +158,8 @@
 
   <!-- 表单弹窗：添加/修改 -->
   <MajorDirectoryForm ref="formRef" @success="getList" />
+  <!-- 高校信息导入对话框 -->
+  <MajorDirectoryImportForm ref="importFormRef" @success="getList" />
 </template>
 
 <script setup lang="ts">
@@ -159,6 +169,7 @@ import { handleTree } from '@/utils/tree'
 import download from '@/utils/download'
 import { MajorDirectoryApi, MajorDirectoryVO } from '@/api/lfpath/majordirectory'
 import MajorDirectoryForm from './MajorDirectoryForm.vue'
+import MajorDirectoryImportForm from "./MajorDirectoryImportForm.vue";
 
 /** 高校专业目录 列表 */
 defineOptions({ name: 'MajorDirectory' })
@@ -244,6 +255,13 @@ const toggleExpandAll = async () => {
   isExpandAll.value = !isExpandAll.value
   await nextTick()
   refreshTable.value = true
+}
+
+
+/** 导入 */
+const importFormRef = ref()
+const handleImport = () => {
+  importFormRef.value.open()
 }
 
 /** 初始化 **/

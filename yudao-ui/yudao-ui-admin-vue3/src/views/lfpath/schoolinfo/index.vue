@@ -268,7 +268,7 @@ const handleExport = async () => {
 }
 
 
-/** 用户导入 */
+/** 导入 */
 const importFormRef = ref()
 const handleImport = () => {
   importFormRef.value.open()

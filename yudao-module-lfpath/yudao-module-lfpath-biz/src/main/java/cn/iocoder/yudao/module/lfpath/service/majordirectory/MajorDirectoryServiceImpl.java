@@ -2,6 +2,8 @@ package cn.iocoder.yudao.module.lfpath.service.majordirectory;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.lfpath.dal.dataobject.schoolinfo.SchoolInfoDO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -28,6 +30,7 @@ import static cn.iocoder.yudao.module.lfpath.enums.ErrorCodeConstants.*;
  */
 @Service
 @Validated
+@Slf4j
 public class MajorDirectoryServiceImpl implements MajorDirectoryService {
 
     @Resource
@@ -145,35 +148,157 @@ public class MajorDirectoryServiceImpl implements MajorDirectoryService {
             throw exception(MAJOR_IMPORT_LIST_IS_EMPTY);
         }
 
-        //把门类插入到lfpath_major_directory表中
+        MajorDirectoryImportRespVO  respVO = MajorDirectoryImportRespVO.builder().createMajorNames(new ArrayList<>())
+                .updateMajorNames(new ArrayList<>()).failureDetails(new LinkedHashMap<>()).build();
 
-        // 1. 遍历importMajorList，按照category去重，获取去重后的category组。
-        List<String> categoryList = importMajorList.stream().map(MajorDirectoryImportExcelVO::getCategory).distinct().collect(Collectors.toList());
-        // 2. 再查询数据库表lfpath_major_directory，查找出level字段值为1的记录。
-        List<MajorDirectoryDO> majorDirectoryList = majorDirectoryMapper.selectList(new LambdaQueryWrapperX<MajorDirectoryDO>()
-                .eq(MajorDirectoryDO::getLevel, 1));
-        // 3. 对比majorDirectoryList中major_name字段值和1中获得的categoryList数据，找出majorDirectoryLis中不存在的category值。
-        List<String> categoryList2 = majorDirectoryList.stream().map(MajorDirectoryDO::getName).collect(Collectors.toList());
-        List<String> categoryList3 = categoryList.stream().filter(category -> !categoryList2.contains(category)).collect(Collectors.toList());
-        // 4. 将categoryList3中获得的数值，作为major_name字段，插入数据库表lfpath_major_directory中，每一条记录的level都是1，directoryType也是1，其他值为空。
-        for (String category : categoryList3) {
-            MajorDirectoryDO majorDirectoryDO = new MajorDirectoryDO();
-            majorDirectoryDO.setName(category);
-            majorDirectoryDO.setLevel("1");
-            majorDirectoryDO.setDirectoryType("1");
-            majorDirectoryMapper.insert(majorDirectoryDO);
-        }
+        importMajorList.stream().forEach(major -> {
+            if(major.getMajorCode().length() == 2){
+                MajorDirectoryDO majorDirectoryDO = new MajorDirectoryDO();
+                majorDirectoryDO.setMajorCode(major.getMajorCode());
+                majorDirectoryDO.setName(major.getName());
+                majorDirectoryDO.setStudyDuration(major.getStudyDuration());
+                majorDirectoryDO.setDegreeType(major.getDegreeType());
+                majorDirectoryDO.setEstablishmentYear(major.getEstablishmentYear());
+                majorDirectoryDO.setLevel("1");
+                majorDirectoryDO.setDirectoryType("1");
+                //判断如果不存在，在进行插入
+                MajorDirectoryDO existMajor = majorDirectoryMapper.selectByMajorCode(major.getMajorCode());
+                if (existMajor == null) {
+                    majorDirectoryMapper.insert(majorDirectoryDO); //
+                    respVO.getCreateMajorNames().add(major.getName());
+                    return;
+                }
+                //如果存在，判断是否允许更新
+                if (!isUpdateSupport) {
+                    respVO.getFailureDetails().put(major.getName(), MAJOR_DIRECTORY_EXISTS.getMsg());
+                    return;
+                }
+                existMajor.setName(major.getName());
+                existMajor.setStudyDuration(major.getStudyDuration());
+                existMajor.setDegreeType(major.getDegreeType());
+                existMajor.setEstablishmentYear(major.getEstablishmentYear());
+                existMajor.setLevel("1");
+                existMajor.setDirectoryType("1");
+                majorDirectoryMapper.updateById(existMajor);
+                respVO.getUpdateMajorNames().add(major.getName());
+            } else if (major.getMajorCode().length() == 4) {
+                String parentMajorCode = major.getMajorCode().substring(0, 2);
+                MajorDirectoryDO parentMajor = majorDirectoryMapper.selectByMajorCode(parentMajorCode);
+                if(parentMajor == null){
+                    throw new RuntimeException("没有找到对应的父级专业");
+                }
+                MajorDirectoryDO majorDirectoryDO = new MajorDirectoryDO();
+                majorDirectoryDO.setMajorCode(major.getMajorCode());
+                majorDirectoryDO.setName(major.getName());
+                majorDirectoryDO.setStudyDuration(major.getStudyDuration());
+                majorDirectoryDO.setDegreeType(major.getDegreeType());
+                majorDirectoryDO.setEstablishmentYear(major.getEstablishmentYear());
+                majorDirectoryDO.setParentId(parentMajor.getId());
+                majorDirectoryDO.setLevel("2");
+                majorDirectoryDO.setDirectoryType("1");
 
-        //把专业类插入到lfpath_major_directory表中
-        List<MajorDirectoryDO> majorDirectoryList2 = majorDirectoryMapper.selectList(new LambdaQueryWrapperX<MajorDirectoryDO>()
-                .eq(MajorDirectoryDO::getLevel, 2));
-        //从importMajorList中获取MajorDirectoryImportExcelVO，要求MajorDirectoryImportExcelVO中的MajorClass字段去重，
-        List<String> majorClassList = importMajorList.stream().map(MajorDirectoryImportExcelVO::getMajorClass).distinct().collect(Collectors.toList());
-        //去重后获取新的List<MajorDirectoryImportExcelVO>
-        List<MajorDirectoryImportExcelVO> majorClassList2 = importMajorList.stream().filter(majorClass -> !majorClassList.contains(majorClass.getMajorClass())).collect(Collectors.toList());
-        //todo
+                //判断如果不存在，在进行插入
+                MajorDirectoryDO existMajor = majorDirectoryMapper.selectByMajorCode(major.getMajorCode());
+                if (existMajor == null) {
+                    majorDirectoryMapper.insert(majorDirectoryDO); //
+                    respVO.getCreateMajorNames().add(major.getName());
+                    return;
+                }
+                //如果存在，判断是否允许更新
+                if (!isUpdateSupport) {
+                    respVO.getFailureDetails().put(major.getName(), MAJOR_DIRECTORY_EXISTS.getMsg());
+                    return;
+                }
+                existMajor.setName(major.getName());
+                existMajor.setParentId(parentMajor.getId());
+                existMajor.setStudyDuration(major.getStudyDuration());
+                existMajor.setDegreeType(major.getDegreeType());
+                existMajor.setEstablishmentYear(major.getEstablishmentYear());
+                existMajor.setLevel("2");
+                existMajor.setDirectoryType("1");
+                majorDirectoryMapper.updateById(existMajor);
+                respVO.getUpdateMajorNames().add(major.getName());
+            } else if (major.getMajorCode().length() == 5) {
+                String majorCode = "0" + major.getMajorCode();
+                String parentMajorCode = majorCode.substring(0, 4);
+                MajorDirectoryDO parentMajor = majorDirectoryMapper.selectByMajorCode(parentMajorCode);
+                if(parentMajor == null){
+                    throw new RuntimeException("没有找到对应的父级专业");
+                }
+                MajorDirectoryDO majorDirectoryDO = new MajorDirectoryDO();
+                majorDirectoryDO.setMajorCode(majorCode);
+                majorDirectoryDO.setName(major.getName());
+                majorDirectoryDO.setStudyDuration(major.getStudyDuration());
+                majorDirectoryDO.setDegreeType(major.getDegreeType());
+                majorDirectoryDO.setEstablishmentYear(major.getEstablishmentYear());
+                majorDirectoryDO.setParentId(parentMajor.getId());
+                majorDirectoryDO.setLevel("3");
+                majorDirectoryDO.setDirectoryType("1");
 
-        return null;
+                //判断如果不存在，在进行插入
+                MajorDirectoryDO existMajor = majorDirectoryMapper.selectByMajorCode(majorCode);
+                if (existMajor == null) {
+                    majorDirectoryMapper.insert(majorDirectoryDO); //
+                    respVO.getCreateMajorNames().add(major.getName());
+                    return;
+                }
+                //如果存在，判断是否允许更新
+                if (!isUpdateSupport) {
+                    respVO.getFailureDetails().put(major.getName(), MAJOR_DIRECTORY_EXISTS.getMsg());
+                    return;
+                }
+                existMajor.setName(major.getName());
+                existMajor.setParentId(parentMajor.getId());
+                existMajor.setStudyDuration(major.getStudyDuration());
+                existMajor.setDegreeType(major.getDegreeType());
+                existMajor.setEstablishmentYear(major.getEstablishmentYear());
+                existMajor.setLevel("3");
+                existMajor.setDirectoryType("1");
+                majorDirectoryMapper.updateById(existMajor);
+                respVO.getUpdateMajorNames().add(major.getName());
+
+            }else if  (major.getMajorCode().length() > 5){
+                String parentMajorCode = major.getMajorCode().substring(0, 4);
+                MajorDirectoryDO parentMajor = majorDirectoryMapper.selectByMajorCode(parentMajorCode);
+                if(parentMajor == null){
+                    throw new RuntimeException("没有找到对应的父级专业");
+                }
+                MajorDirectoryDO majorDirectoryDO = new MajorDirectoryDO();
+                majorDirectoryDO.setMajorCode(major.getMajorCode());
+                majorDirectoryDO.setName(major.getName());
+                majorDirectoryDO.setStudyDuration(major.getStudyDuration());
+                majorDirectoryDO.setDegreeType(major.getDegreeType());
+                majorDirectoryDO.setEstablishmentYear(major.getEstablishmentYear());
+                majorDirectoryDO.setParentId(parentMajor.getId());
+                majorDirectoryDO.setLevel("3");
+                majorDirectoryDO.setDirectoryType("1");
+
+                //判断如果不存在，在进行插入
+                MajorDirectoryDO existMajor = majorDirectoryMapper.selectByMajorCode(major.getMajorCode());
+                if (existMajor == null) {
+                    majorDirectoryMapper.insert(majorDirectoryDO); //
+                    respVO.getCreateMajorNames().add(major.getName());
+                    return;
+                }
+                //如果存在，判断是否允许更新
+                if (!isUpdateSupport) {
+                    respVO.getFailureDetails().put(major.getName(), MAJOR_DIRECTORY_EXISTS.getMsg());
+                    return;
+                }
+                existMajor.setName(major.getName());
+                existMajor.setParentId(parentMajor.getId());
+                existMajor.setStudyDuration(major.getStudyDuration());
+                existMajor.setDegreeType(major.getDegreeType());
+                existMajor.setEstablishmentYear(major.getEstablishmentYear());
+                existMajor.setLevel("3");
+                existMajor.setDirectoryType("1");
+                majorDirectoryMapper.updateById(existMajor);
+                respVO.getUpdateMajorNames().add(major.getName());
+
+            }
+        });
+
+        return respVO;
     }
 
 }
