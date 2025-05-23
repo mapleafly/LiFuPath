@@ -21,7 +21,7 @@ public interface CandidateScoreDistributionMapper extends BaseMapperX<CandidateS
         return selectPage(reqVO, new LambdaQueryWrapperX<CandidateScoreDistributionDO>()
                 .eqIfPresent(CandidateScoreDistributionDO::getProvince, reqVO.getProvince())
                 .eqIfPresent(CandidateScoreDistributionDO::getYear, reqVO.getYear())
-                .orderByDesc(CandidateScoreDistributionDO::getId));
+                .orderByAsc(CandidateScoreDistributionDO::getId));
     }
 
     default CandidateScoreDistributionDO selectByScoreAndProvinceAndYear(String score, String province, String year) {

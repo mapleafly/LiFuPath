@@ -26,7 +26,7 @@ public interface SchoolInfoMapper extends BaseMapperX<SchoolInfoDO> {
                 .eqIfPresent(SchoolInfoDO::getEducationLevel, reqVO.getEducationLevel())
                 .eqIfPresent(SchoolInfoDO::getEducationSystem, reqVO.getEducationSystem())
                 .betweenIfPresent(SchoolInfoDO::getCreateTime, reqVO.getCreateTime())
-                .orderByDesc(SchoolInfoDO::getId));
+                .orderByAsc(SchoolInfoDO::getId));
     }
 
     default SchoolInfoDO selectBySchoolName(String schoolName) {
