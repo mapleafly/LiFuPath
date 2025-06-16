@@ -8,7 +8,7 @@
       :inline="true"
       label-width="68px"
     >
-      <el-form-item label="学校名称" prop="schoolName">
+      <el-form-item label="学校" prop="schoolName">
         <el-input
           v-model="queryParams.schoolName"
           placeholder="请输入学校名称"
@@ -17,7 +17,7 @@
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="专业组名称" prop="majorGroupName">
+      <el-form-item label="专业组" prop="majorGroupName">
         <el-input
           v-model="queryParams.majorGroupName"
           placeholder="请输入专业组名称"
@@ -85,23 +85,23 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
-      <el-table-column label="编号" align="center" prop="id" />
-      <el-table-column label="学校标识码" align="center" prop="schoolCode" />
-      <el-table-column label="学校名称" align="center" prop="schoolName" />
-      <el-table-column label="专业组编码" align="center" prop="majorGroupCode" />
-      <el-table-column label="专业组名称" align="center" prop="majorGroupName" />
-      <el-table-column label="总分" align="center" prop="totalScore" />
-      <el-table-column label="语文" align="center" prop="chineseScore" />
-      <el-table-column label="数学" align="center" prop="mathScore" />
-      <el-table-column label="外语" align="center" prop="englishScore" />
-      <el-table-column label="三科选考" align="center" prop="electiveScores" />
-      <el-table-column label="其他要求" align="center" prop="otherRequirements" />
-      <el-table-column label="年限" align="center" prop="durationYears">
+      <el-table-column label="编号" align="center" prop="id" fixed width="80"/>
+      <el-table-column label="标识码" align="center" prop="schoolCode" fixed width="80"/>
+      <el-table-column label="学校名称" align="center" prop="schoolName" fixed width="180"  />
+      <el-table-column label="专业组编码" align="center" prop="majorGroupCode" fixed width="80" />
+      <el-table-column label="专业组名称" align="center" prop="majorGroupName" fixed width="180"/>
+      <el-table-column label="总分" align="center" prop="totalScore" width="80" />
+      <el-table-column label="语文" align="center" prop="chineseScore" width="80" />
+      <el-table-column label="数学" align="center" prop="mathScore" width="80" />
+      <el-table-column label="外语" align="center" prop="englishScore" width="80" />
+      <el-table-column label="三科选考" align="center" prop="electiveScores" width="80" />
+      <el-table-column label="其他要求" align="center" prop="otherRequirements" width="180" />
+      <el-table-column label="年限" align="center" prop="durationYears" fixed="right" width="100" >
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.LFPATH_YEARS" :value="scope.row.durationYears" />
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" min-width="120px">
+      <el-table-column label="操作" align="center" min-width="120px" fixed="right">
         <template #default="scope">
           <el-button
             link

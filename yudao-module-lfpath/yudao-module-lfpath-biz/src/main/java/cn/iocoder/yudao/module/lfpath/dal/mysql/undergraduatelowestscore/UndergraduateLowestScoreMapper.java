@@ -23,7 +23,7 @@ public interface UndergraduateLowestScoreMapper extends BaseMapperX<Undergraduat
                 .likeIfPresent(UndergraduateLowestScoreDO::getMajorGroupName, reqVO.getMajorGroupName())
                 .betweenIfPresent(UndergraduateLowestScoreDO::getTotalScore, reqVO.getTotalScore())
                 .eqIfPresent(UndergraduateLowestScoreDO::getDurationYears, reqVO.getDurationYears())
-                .orderByDesc(UndergraduateLowestScoreDO::getId));
+                .orderByAsc(UndergraduateLowestScoreDO::getId));
     }
 
     default UndergraduateLowestScoreDO selectByUndergraduateLowestScore(String schoolCode, String majorGroupCode, String durationYears){
