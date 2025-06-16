@@ -33,20 +33,16 @@ public class UndergraduateLowestScoreSaveReqVO {
     @NotNull(message = "总分不能为空")
     private BigDecimal totalScore;
 
-    @Schema(description = "语文", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "语文不能为空")
+    @Schema(description = "语文")
     private BigDecimal chineseScore;
 
-    @Schema(description = "数学", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "数学不能为空")
+    @Schema(description = "数学")
     private BigDecimal mathScore;
 
-    @Schema(description = "外语", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "外语不能为空")
+    @Schema(description = "外语")
     private BigDecimal englishScore;
 
-    @Schema(description = "三科选考", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "三科选考不能为空")
+    @Schema(description = "三科选考")
     private BigDecimal electiveScores;
 
     @Schema(description = "其他要求")

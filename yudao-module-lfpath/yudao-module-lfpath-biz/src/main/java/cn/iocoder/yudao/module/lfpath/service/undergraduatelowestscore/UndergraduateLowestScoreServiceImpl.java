@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.lfpath.service.undergraduatelowestscore;
 
+import cn.hutool.core.collection.CollUtil;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -69,6 +70,34 @@ public class UndergraduateLowestScoreServiceImpl implements UndergraduateLowestS
     @Override
     public PageResult<UndergraduateLowestScoreDO> getUndergraduateLowestScorePage(UndergraduateLowestScorePageReqVO pageReqVO) {
         return undergraduateLowestScoreMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public UndergraduateLowestScoreImportRespVO importUndergraduateLowestScoreList(List<UndergraduateLowestScoreImportExcelVO> list, boolean updateSupport) {
+        // 1 参数校验
+        if (CollUtil.isEmpty(list)) {
+            throw exception(UNDERGRADUATE_LOWEST_SCORE_IMPORT_LIST_IS_EMPTY);
+        }
+        // 2. 遍历，逐个创建 or 更新
+        UndergraduateLowestScoreImportRespVO respVO = UndergraduateLowestScoreImportRespVO.builder().createRecords(new ArrayList<>()).updateRecords(new ArrayList<>()).failureDetails(new LinkedHashMap<>()).build();
+        list.forEach(excelVO -> {
+            // 2.1 判断如果不存在，在进行插入
+            UndergraduateLowestScoreDO existUndergraduateLowestScore = undergraduateLowestScoreMapper.selectByUndergraduateLowestScore(excelVO.getSchoolCode(), excelVO.getMajorGroupCode(), excelVO.getDurationYears());
+            if (existUndergraduateLowestScore == null) {
+                undergraduateLowestScoreMapper.insert(BeanUtils.toBean(excelVO, UndergraduateLowestScoreDO.class)); //
+                respVO.getCreateRecords().add(excelVO.getSchoolName());
+                return;
+            }
+            // 2.2 如果存在，判断是否允许更新
+            if (!updateSupport) {
+                respVO.getFailureDetails().put(excelVO.getSchoolName(), UNDERGRADUATE_LOWEST_SCORE_EXISTS.getMsg());
+            }
+            UndergraduateLowestScoreDO updateUndergraduateLowestScore = BeanUtils.toBean(excelVO, UndergraduateLowestScoreDO.class);
+            updateUndergraduateLowestScore.setId(existUndergraduateLowestScore.getId());
+            undergraduateLowestScoreMapper.updateById(updateUndergraduateLowestScore);
+            respVO.getUpdateRecords().add(excelVO.getSchoolName());
+        });
+        return respVO;
     }
 
 }

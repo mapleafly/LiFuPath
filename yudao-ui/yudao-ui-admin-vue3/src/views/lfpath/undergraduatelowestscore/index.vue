@@ -62,6 +62,14 @@
           <Icon icon="ep:plus" class="mr-5px" /> 新增
         </el-button>
         <el-button
+          type="warning"
+          plain
+          @click="handleImport"
+          v-hasPermi="['lfpath:undergraduate-lowest-score:import']"
+        >
+          <Icon icon="ep:upload"  class="mr-5px" /> 导入
+        </el-button>
+        <el-button
           type="success"
           plain
           @click="handleExport"
@@ -125,6 +133,8 @@
 
   <!-- 表单弹窗：添加/修改 -->
   <UndergraduateLowestScoreForm ref="formRef" @success="getList" />
+    <!-- 信息导入对话框 -->
+  <UndergraduateLowestScoreImportForm ref="importFormRef" @success="getList" />
 </template>
 
 <script setup lang="ts">
@@ -132,6 +142,7 @@ import { getStrDictOptions, DICT_TYPE } from '@/utils/dict'
 import download from '@/utils/download'
 import { UndergraduateLowestScoreApi, UndergraduateLowestScoreVO } from '@/api/lfpath/undergraduatelowestscore'
 import UndergraduateLowestScoreForm from './UndergraduateLowestScoreForm.vue'
+import UndergraduateLowestScoreImportForm from './UndergraduateLowestScoreImportForm.vue'
 
 /** 本科普通批投档线 列表 */
 defineOptions({ name: 'UndergraduateLowestScore' })
@@ -209,6 +220,12 @@ const handleExport = async () => {
   } finally {
     exportLoading.value = false
   }
+}
+
+/** 导入 */
+const importFormRef = ref()
+const handleImport = () => {
+  importFormRef.value.open()
 }
 
 /** 初始化 **/

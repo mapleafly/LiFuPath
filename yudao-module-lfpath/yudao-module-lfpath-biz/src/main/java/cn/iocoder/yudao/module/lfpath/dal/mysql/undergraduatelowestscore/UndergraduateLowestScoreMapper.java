@@ -26,4 +26,7 @@ public interface UndergraduateLowestScoreMapper extends BaseMapperX<Undergraduat
                 .orderByDesc(UndergraduateLowestScoreDO::getId));
     }
 
+    default UndergraduateLowestScoreDO selectByUndergraduateLowestScore(String schoolCode, String majorGroupCode, String durationYears){
+        return selectOne(UndergraduateLowestScoreDO::getSchoolCode, schoolCode, UndergraduateLowestScoreDO::getMajorGroupCode, majorGroupCode, UndergraduateLowestScoreDO::getDurationYears, durationYears);
+    }
 }

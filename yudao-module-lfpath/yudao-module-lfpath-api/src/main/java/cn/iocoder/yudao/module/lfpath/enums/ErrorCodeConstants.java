@@ -31,4 +31,6 @@ public interface ErrorCodeConstants {
     ErrorCode MAJOR_DIRECTORY_EXISTS = new ErrorCode(1_111_005_008, "高校专业目录已经存在！");
     // ========== 本科普通批投档线 1_111_006_000 ==========
     ErrorCode UNDERGRADUATE_LOWEST_SCORE_NOT_EXISTS = new ErrorCode(1_111_006_001, "本科普通批投档线不存在");
+    ErrorCode UNDERGRADUATE_LOWEST_SCORE_IMPORT_LIST_IS_EMPTY = new ErrorCode(1_111_006_002, "导入本科普通批投档线数据不能为空！");
+    ErrorCode UNDERGRADUATE_LOWEST_SCORE_EXISTS = new ErrorCode(1_111_006_003, "大学年度专业组普通批投档线已经存在");
 }

@@ -37,19 +37,19 @@ public class UndergraduateLowestScoreRespVO {
     @ExcelProperty("总分")
     private BigDecimal totalScore;
 
-    @Schema(description = "语文", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "语文")
     @ExcelProperty("语文")
     private BigDecimal chineseScore;
 
-    @Schema(description = "数学", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "数学")
     @ExcelProperty("数学")
     private BigDecimal mathScore;
 
-    @Schema(description = "外语", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "外语")
     @ExcelProperty("外语")
     private BigDecimal englishScore;
 
-    @Schema(description = "三科选考", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "三科选考")
     @ExcelProperty("三科选考")
     private BigDecimal electiveScores;
 
@@ -59,7 +59,7 @@ public class UndergraduateLowestScoreRespVO {
 
     @Schema(description = "年限", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty(value = "年限", converter = DictConvert.class)
-    @DictFormat("lfpath_years") // TODO 代码优化：建议设置到对应的 DictTypeConstants 枚举类中
+    @DictFormat("lfpath_years")
     private String durationYears;
 
 }

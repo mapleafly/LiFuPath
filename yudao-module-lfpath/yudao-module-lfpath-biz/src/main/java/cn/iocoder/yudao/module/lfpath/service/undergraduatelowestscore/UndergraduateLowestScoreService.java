@@ -52,4 +52,5 @@ public interface UndergraduateLowestScoreService {
      */
     PageResult<UndergraduateLowestScoreDO> getUndergraduateLowestScorePage(UndergraduateLowestScorePageReqVO pageReqVO);
 
+    UndergraduateLowestScoreImportRespVO importUndergraduateLowestScoreList(List<UndergraduateLowestScoreImportExcelVO> list, boolean updateSupport);
 }

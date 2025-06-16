@@ -46,5 +46,14 @@ export const UndergraduateLowestScoreApi = {
   // 导出本科普通批投档线 Excel
   exportUndergraduateLowestScore: async (params) => {
     return await request.download({ url: `/lfpath/undergraduate-lowest-score/export-excel`, params })
-  }
+  },
+  // 导入本科普通批投档线 Excel
+  importUndergraduateLowestScore: async (formData: FormData) => {
+    return await request.post({ url: `/lfpath/undergraduate-lowest-score/import`, data: formData })
+  },
+
+  // 下载本科普通批投档线信息导入模板
+  importUndergraduateLowestScoreTemplate: async () => {
+    return await request.download({ url: `/lfpath/undergraduate-lowest-score/get-import-template` })
+  },
 }

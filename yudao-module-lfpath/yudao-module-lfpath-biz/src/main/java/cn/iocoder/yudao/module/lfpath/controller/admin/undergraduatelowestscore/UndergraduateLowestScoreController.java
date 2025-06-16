@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.lfpath.controller.admin.undergraduatelowestscore;
 
+import io.swagger.v3.oas.annotations.Parameters;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -8,9 +9,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
 
-import jakarta.validation.constraints.*;
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
+
+import java.math.BigDecimal;
 import java.util.*;
 import java.io.IOException;
 
@@ -28,6 +30,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.lfpath.controller.admin.undergraduatelowestscore.vo.*;
 import cn.iocoder.yudao.module.lfpath.dal.dataobject.undergraduatelowestscore.UndergraduateLowestScoreDO;
 import cn.iocoder.yudao.module.lfpath.service.undergraduatelowestscore.UndergraduateLowestScoreService;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "管理后台 - 本科普通批投档线")
 @RestController
@@ -77,6 +80,35 @@ public class UndergraduateLowestScoreController {
     public CommonResult<PageResult<UndergraduateLowestScoreRespVO>> getUndergraduateLowestScorePage(@Valid UndergraduateLowestScorePageReqVO pageReqVO) {
         PageResult<UndergraduateLowestScoreDO> pageResult = undergraduateLowestScoreService.getUndergraduateLowestScorePage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, UndergraduateLowestScoreRespVO.class));
+    }
+
+    @GetMapping("/get-import-template")
+    @Operation(summary = "获得导入本科普通批投档线模板")
+    public void importTemplate(HttpServletResponse response) throws IOException {
+        // 手动创建导出 demo
+        List<UndergraduateLowestScoreImportExcelVO> list = Arrays.asList(
+                UndergraduateLowestScoreImportExcelVO.builder().schoolName("北京某大学").schoolCode("1234567890").majorGroupCode("1").majorGroupName("物理组").totalScore(BigDecimal.valueOf(100.0)).chineseScore(BigDecimal.valueOf(100.0)).mathScore(BigDecimal.valueOf(100.0)).englishScore(BigDecimal.valueOf(100.0)).electiveScores(BigDecimal.valueOf(100.0)).otherRequirements("无").durationYears("2024").build(),
+                UndergraduateLowestScoreImportExcelVO.builder().schoolName("北京某大学").schoolCode("1234567890").majorGroupCode("1").majorGroupName("物理组").totalScore(BigDecimal.valueOf(500.0)).chineseScore(BigDecimal.valueOf(120)).mathScore(BigDecimal.valueOf(100.0)).englishScore(BigDecimal.valueOf(88.0)).electiveScores(BigDecimal.valueOf(88)).otherRequirements("无").durationYears("2023").build()
+        );
+
+        // 输出
+        ExcelUtils.write(response, "本科普通批投档线信息导入模板.xls", "高校信息列表", UndergraduateLowestScoreImportExcelVO.class, list);
+    }
+
+
+    @PostMapping("/import")
+    @Operation(summary = "导入本科普通批投档线 Excel")
+    @Parameters({
+        @Parameter(name = "file", description = "Excel 文件", required = true),
+        @Parameter(name = "updateSupport", description = "是否支持更新，默认为 false", example = "true")
+    })
+    @PreAuthorize("@ss.hasPermission('lfpath:undergraduate-lowest-score:import')")
+    @ApiAccessLog(operateType = IMPORT)
+    public CommonResult<UndergraduateLowestScoreImportRespVO> importUndergraduateLowestScoreExcel(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "updateSupport", required = false, defaultValue = "false") Boolean updateSupport) throws IOException {
+        List<UndergraduateLowestScoreImportExcelVO> list = ExcelUtils.read(file, UndergraduateLowestScoreImportExcelVO.class);
+        return success(undergraduateLowestScoreService.importUndergraduateLowestScoreList(list, updateSupport));
     }
 
     @GetMapping("/export-excel")

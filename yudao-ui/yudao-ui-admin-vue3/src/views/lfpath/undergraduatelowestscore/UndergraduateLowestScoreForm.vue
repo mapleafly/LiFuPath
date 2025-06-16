@@ -89,10 +89,6 @@ const formRules = reactive({
   majorGroupCode: [{ required: true, message: '专业组编码不能为空', trigger: 'blur' }],
   majorGroupName: [{ required: true, message: '专业组名称不能为空', trigger: 'blur' }],
   totalScore: [{ required: true, message: '总分不能为空', trigger: 'blur' }],
-  chineseScore: [{ required: true, message: '语文不能为空', trigger: 'blur' }],
-  mathScore: [{ required: true, message: '数学不能为空', trigger: 'blur' }],
-  englishScore: [{ required: true, message: '外语不能为空', trigger: 'blur' }],
-  electiveScores: [{ required: true, message: '三科选考不能为空', trigger: 'blur' }],
   durationYears: [{ required: true, message: '年限不能为空', trigger: 'blur' }]
 })
 const formRef = ref() // 表单 Ref
